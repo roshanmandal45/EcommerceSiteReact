@@ -43,13 +43,22 @@ export default function Navbar() {
     </span>
   )}
 </div>
-
-          <Link to={"login"}>
+<div className=" flex gap-x-4">
+<Link to={"login"}>
             {" "}
             <button className="shadow w-22 p-2 hover:bg-blue-600 hover:text-white text-black rounded-2xl active:scale-90 cursor-pointer">
               Login
             </button>
           </Link>
+
+          <Link to={"register"}>
+            {" "}
+            <button className="shadow w-22 p-2 hover:bg-blue-600 hover:text-white text-black rounded-2xl active:scale-90 cursor-pointer">
+              Signup
+            </button>
+          </Link>
+</div>
+          
         </div>
       </div>
     </nav>
