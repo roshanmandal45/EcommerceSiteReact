@@ -17,7 +17,7 @@ export default function Products() {
         {products.map(product => (
           <Link
             key={product.id}
-            to={`/products/${product.id}`}  // <-- must match route
+            to={`/products/${product.id}`}  
             className="bg-white rounded-lg shadow hover:shadow-lg overflow-hidden"
           >
             <img

@@ -70,14 +70,14 @@ const Signup = () => {
           </button>
         </form>
 
-        {/* OR Divider */}
+       
         <div className="flex items-center my-4">
           <hr className="flex-1 border-gray-300" />
           <span className="mx-2 text-gray-400 font-medium">OR</span>
           <hr className="flex-1 border-gray-300" />
         </div>
 
-        {/* Google Signup */}
+        
         <button
           onClick={handleGoogleSignup}
           className="w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-lg hover:bg-gray-100 transition"

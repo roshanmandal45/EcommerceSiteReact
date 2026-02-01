@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { CardContext } from "../context/CartContext";
+import { auth } from "../config/firebase";
 
 export default function ProductDetail() {
+  const navigate = useNavigate()
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const {addToCart, cart} = useContext(CardContext)
@@ -31,11 +33,19 @@ export default function ProductDetail() {
         <p className="text-gray-700 text-xl font-semibold mb-4">${product.price}</p>
         
         <p className="text-gray-600">{product.description}</p>
-        <button onClick={() => addToCart(product) 
+       <button
+  onClick={() => {
+    if (!auth.currentUser) {
+      navigate("/login"); 
+    } else {
+      addToCart(product);
+    }
+  }}
+  className="shadow-2xl bg-amber-400 w-28 p-2 rounded-2xl text-white active:scale-90"
+>
+  Add to Cart
+</button>
 
-        } className="shadow-2xl bg-amber-400 w-28 p-2 rounded-2xl text-white active:scale-90">
-          Add to Cart
-        </button>
         <br></br>
         
       </div>

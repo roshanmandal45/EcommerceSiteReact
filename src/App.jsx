@@ -20,27 +20,25 @@ const App = () => {
 
       <main className="flex-1">
         <Routes>
-          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Protected Routes */}
+         
           <Route
             path="/products"
             element={
-              <ProtectedRoute>
+              
                 <Products />
-              </ProtectedRoute>
+              
             }
           />
 
           <Route
             path="/products/:id"
             element={
-              <ProtectedRoute>
                 <ProductDetail />
-              </ProtectedRoute>
+              
             }
           />
 
