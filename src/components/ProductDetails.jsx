@@ -33,7 +33,8 @@ export default function ProductDetail() {
         <p className="text-gray-700 text-xl font-semibold mb-4">${product.price}</p>
         
         <p className="text-gray-600">{product.description}</p>
-       <button
+        <div className="flex justify-center items-center">
+  <button
   onClick={() => {
     if (!auth.currentUser) {
       navigate("/login"); 
@@ -41,12 +42,13 @@ export default function ProductDetail() {
       addToCart(product);
     }
   }}
-  className="shadow-2xl bg-amber-400 w-28 p-2 rounded-2xl text-white active:scale-90"
+  className=" flex justify-center items-center shadow-2xl bg-amber-400 w-28 p-2 mt-4 rounded-2xl text-white active:scale-90"
 >
   Add to Cart
 </button>
+        </div>
+     
 
-        <br></br>
         
       </div>
     </div>
