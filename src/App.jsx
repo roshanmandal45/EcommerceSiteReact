@@ -8,10 +8,9 @@ import Cart from "./components/Cart";
 import Products from "./components/Products";
 import ProductDetail from "./components/ProductDetails";
 import Favourite from "./components/Favourite";
-import Login from "./pages/Login";
+import Login from "./pages/Login"; // <-- Your login page
 import ProtectedRoute from "./protectedRoute/Protected";
 import Register from "./pages/Register";
-
 
 const App = () => {
   return (
@@ -21,26 +20,11 @@ const App = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} /> {/* Login will handle Firebase */}
           <Route path="/register" element={<Register />} />
 
-         
-          <Route
-            path="/products"
-            element={
-              
-                <Products />
-              
-            }
-          />
-
-          <Route
-            path="/products/:id"
-            element={
-                <ProductDetail />
-              
-            }
-          />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
 
           <Route
             path="/cart"

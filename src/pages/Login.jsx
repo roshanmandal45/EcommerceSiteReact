@@ -1,17 +1,25 @@
-import { useState, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../config/firebase";
+import { fetchUsers, saveUser } from "../database/db";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [users, setUsers] = useState([]); 
+  const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      setCurrentUser(userCredential.user);
       alert("Login successful ✅");
       navigate("/");
     } catch (error) {
@@ -21,13 +29,26 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      setCurrentUser(user);
+
+      await saveUser(user);
+
       alert("Google login successful ✅");
       navigate("/");
     } catch (error) {
       alert(error.message);
     }
   };
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      const allUsers = await fetchUsers();
+      setUsers(allUsers);
+    };
+    loadUsers();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center px-4">
@@ -70,7 +91,6 @@ const Login = () => {
           </button>
         </form>
 
-       
         <div className="flex items-center my-4">
           <hr className="flex-1 border-gray-300" />
           <span className="mx-2 text-gray-400 font-medium">OR</span>
@@ -91,10 +111,26 @@ const Login = () => {
 
         <p className="text-center text-gray-500 mt-6">
           Don’t have an account?{" "}
-          <Link to="/signup" className="text-blue-600 hover:underline font-medium">
+          <Link
+            to="/signup"
+            className="text-blue-600 hover:underline font-medium"
+          >
             Sign Up
           </Link>
         </p>
+
+        {users.length > 0 && (
+          <div className="mt-6">
+            <h3 className="font-semibold text-gray-700">All Users:</h3>
+            <ul className="text-gray-600 mt-2">
+              {users.map((user) => (
+                <li key={user.id}>
+                  {user.name} - {user.email}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
