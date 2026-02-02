@@ -1,28 +1,76 @@
 import { useState } from "react";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+} from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../config/firebase";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState(null);
+
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      alert("Signup successful ✅");
+      alert("Signup successful");
       navigate("/");
     } catch (error) {
       alert(error.message);
     }
   };
 
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        { size: "invisible" }
+      );
+    }
+  };
+
+  const sendOTP = async () => {
+    try {
+      setupRecaptcha();
+      const appVerifier = window.recaptchaVerifier;
+
+      const result = await signInWithPhoneNumber(
+        auth,
+        phone,
+        appVerifier
+      );
+
+      setConfirmationResult(result);
+      alert("OTP sent");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const verifyOTP = async () => {
+    try {
+      await confirmationResult.confirm(otp);
+      alert("Phone signup successful");
+      navigate("/");
+    } catch (error) {
+      alert("Invalid OTP");
+    }
+  };
+
   const handleGoogleSignup = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-      alert("Google signup successful ✅");
+      alert("Google signup successful");
       navigate("/");
     } catch (error) {
       alert(error.message);
@@ -32,73 +80,99 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-gradient-to-r from-green-100 to-green-200 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+
+        <h2 className="text-3xl font-bold text-center mb-6">
           Create Account
         </h2>
-        <p className="text-center text-gray-500 mb-6">
-          Sign up to start shopping on ShopHub
-        </p>
 
+        
         <form onSubmit={handleSignup} className="space-y-4">
           <div>
-            <label className="block text-gray-700 mb-1">Email</label>
+            <label>Email</label>
             <input
               type="email"
               placeholder="Enter your email"
               required
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none transition"
+              className="w-full border outline-0 p-3 rounded"
             />
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-1">Password</label>
+            <label>Password</label>
             <input
               type="password"
               placeholder="Enter your password"
               required
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-400 focus:outline-none transition"
+              className="w-full border outline-0  p-3 rounded"
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition"
-          >
+          <button className="w-full bg-green-600 text-white py-3 rounded">
             Sign Up
           </button>
         </form>
 
        
-        <div className="flex items-center my-4">
-          <hr className="flex-1 border-gray-300" />
-          <span className="mx-2 text-gray-400 font-medium">OR</span>
-          <hr className="flex-1 border-gray-300" />
+        <div className="mt-6 space-y-3">
+          <label>Phone Number</label>
+          <input
+            type="text"
+            placeholder="+97798XXXXXXXX"
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full border outline-0  p-3 rounded"
+          />
+
+          <button
+            onClick={sendOTP}
+            className="w-full bg-blue-600 text-white py-2 rounded"
+          >
+            Send OTP
+          </button>
+
+          {confirmationResult && (
+            <>
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                onChange={(e) => setOtp(e.target.value)}
+                className="w-full border outline-0  p-3 rounded"
+              />
+              <button
+                onClick={verifyOTP}
+                className="w-full bg-green-600 text-white py-2 rounded"
+              >
+                Verify OTP
+              </button>
+            </>
+          )}
         </div>
+
+        <div className="my-4 text-center text-gray-400">OR</div>
 
         
         <button
           onClick={handleGoogleSignup}
-          className="w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-lg hover:bg-gray-100 transition"
+          className="w-full border  outline-0 py-3 rounded"
         >
-          <img
-            src="https://imgs.search.brave.com/jkbMhUzFlfiqzmU4cnbqA5ScYzzLfJqTT1pJXORG2CM/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMzUv/NzQ2LzA1Ni9zbWFs/bC9nb29nbGUtYXBw/LWxvZ28taW4tYmln/LXN1ci1zdHlsZS0z/ZC1yZW5kZXItaWNv/bi1kZXNpZ24tY29u/Y2VwdC1lbGVtZW50/LWlzb2xhdGVkLXRy/YW5zcGFyZW50LWJh/Y2tncm91bmQtZnJl/ZS1wbmcucG5n"
-            alt="Google Logo"
-            className="w-5 h-5"
-          />
           Continue with Google
         </button>
 
-        <p className="text-center text-gray-500 mt-6">
+        <p className="text-center mt-4">
           Already have an account?{" "}
-          <Link to="/login" className="text-green-600 hover:underline font-medium">
+          <Link to="/login" className="text-green-600">
             Login
           </Link>
         </p>
+
+        
+        <div id="recaptcha-container"></div>
       </div>
     </div>
   );
 };
 
 export default Signup;
+
+

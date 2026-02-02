@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CardContext } from "../context/CartContext";
 import { auth } from "../config/firebase";
+import { CardContext } from "../config/context/CartContext";
 
 export default function ProductDetail() {
   const navigate = useNavigate()

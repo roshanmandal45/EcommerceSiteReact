@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Handbag, Heart, ShoppingCart } from "lucide-react";
 import { useContext } from "react";
-import { CardContext } from "../context/CartContext";
+import { CardContext } from "../config/context/CartContext";
 
 export default function Navbar() {
       const { cart} = useContext(CardContext)
