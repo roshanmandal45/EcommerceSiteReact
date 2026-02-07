@@ -47,7 +47,7 @@ export default function Navbar() {
             </Link>
             {cart.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs h-5 w-5 flex items-center justify-center rounded-full">
-                {cart.length}
+                {cart.reduce((total, item) => total + (item.quantity || 1), 0)}
               </span>
             )}
           </div>
